@@ -61,6 +61,7 @@ textarea{resize:none;line-height:1.5}
 ul.ing{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:14px}ul.ing i{font-style:normal;display:inline-block;width:16px;color:var(--a2)}
 ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{color:var(--mu)}ul.ing em{font-style:normal;color:var(--ac)}
 .b:disabled{opacity:.6;cursor:default}
+.chip.ed{display:inline-flex;gap:0;padding:0;overflow:hidden}.chip.ed button{border:0;background:none;color:inherit;font:inherit;padding:5px 9px}.chip.ed button+button{border-left:1px solid var(--ln);color:var(--bad)}
 .chip.soon{border-color:#e0a54a;border-width:2px}.chip.late{border-color:var(--bad);border-width:2px}
 .ex{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln);font-size:14px}.ex input{width:auto;padding:5px 6px;font-size:13px}
 .ex .soon .mu{color:#c27c12;font-weight:600}.ex .late .mu{color:var(--bad);font-weight:600}
@@ -771,10 +772,11 @@ const ALIAS={"huevo":"huevos","champiñón":"champiñones","champis":"champiñon
 Object.entries(EU).forEach(([k,[b,d]])=>{ALIAS[b.toLowerCase()]=ALIAS[b.toLowerCase()]||k;ALIAS[d.toLowerCase()]=ALIAS[d.toLowerCase()]||k});
 const ALIASN={};Object.entries(ALIAS).forEach(([a,k])=>{ALIASN[nrm(a)]=ALIASN[nrm(a)]||k});
 function pAdd(raw,fresh=true){const x=String(raw).trim().toLowerCase();if(!x)return;const n=nrm(x),sg=n.replace(/e?s$/,"");
-  const k=ALLK.find(a=>nrm(a)===n)||ALIASN[n]||ALLK.find(a=>nrm(a)===sg||nrm(a)===n+"s")||ALIASN[sg];
-  if(k){if(!D.pan.includes(k))D.pan.push(k);if(fresh)setExp(k)}else if(!D.pc.includes(x))D.pc.push(x)}
+  const rk=Object.keys(D.pren||{}).find(a=>nrm(D.pren[a])===n);
+  const k=rk||ALLK.find(a=>nrm(a)===n)||ALIASN[n]||ALLK.find(a=>nrm(a)===sg||nrm(a)===n+"s")||ALIASN[sg];
+  if(k){if(D.phide)D.phide=D.phide.filter(y=>y!==k);if(!D.pan.includes(k))D.pan.push(k);if(fresh)setExp(k)}else{const c=Object.keys(D.pcat||{}).find(y=>nrm(y)===n)||x;if(!D.pc.includes(c))D.pc.push(c);if(fresh&&D.pcat&&D.pcat[c])setExp(c)}}
 {const old=D.pc;D.pc=[];old.forEach(x=>pAdd(x,false));}
-const pLabel=k=>LG==="eu"&&EU[k]?EU[k][1]:k;
+const pLabel=k=>(D.pren&&D.pren[k])||(LG==="eu"&&EU[k]?EU[k][1]:k);
 
 let cookOpen=false,CR=[],cRound=0,cShown=new Set(),cOpen=new Set(),pClosed=new Set(),cMsg="";
 const DIF={"Fácil":"Erraza","Media":"Ertaina","Difícil":"Zaila"};
@@ -798,16 +800,21 @@ function cCard(o,i){
 }
 function vCoc(){
   const has=pSet();let cats="";
-  for(const [cat,items] of Object.entries(CATS)){const n=items.filter(x=>has.has(x)).length;
-    cats+=`<details class="pcat" data-cat="${cat}"${pClosed.has(cat)?"":" open"}><summary><span>${LG==="eu"?CAT_EU[cat]:cat}</span><span class="mu">${n||""}</span></summary><div class="chips">${items.map(x=>{const d=has.has(x)?dLeft(x):null;return`<button class="chip${d!==null&&d<=1?" late":d!==null&&d<=3?" soon":""}" data-pi="${esc(x)}" aria-pressed="${has.has(x)}">${esc(pLabel(x))}${d!==null&&d<=3?" ⏰":""}</button>`}).join("")}</div></details>`}
-  if(D.pc.length)cats+=`<div class="pcat"><div class="mu" style="font-weight:700">${LL("Otros","Beste batzuk")}</div><div class="chips">${D.pc.map(x=>`<button class="chip" data-pcx="${esc(x)}" aria-pressed="true">${esc(x)} ×</button>`).join("")}</div></div>`;
+  const cx=c=>Object.keys(D.pcat).filter(x=>D.pcat[x]===c).sort((a,b)=>a.localeCompare(b,"es")),
+    cchip=x=>{if(pEdit)return edChip(x,x);const on=D.pc.includes(x),d=on?dLeft(x):null;
+      return`<button class="chip${d!==null&&d<=1?" late":d!==null&&d<=3?" soon":""}" data-pcx="${esc(x)}" aria-pressed="${on}">${esc(x)}${d!==null&&d<=3?" ⏰":""}</button>`};
+  for(const [cat,items] of Object.entries(CATS)){const n=items.filter(x=>has.has(x)).length+cx(cat).filter(x=>D.pc.includes(x)).length;
+    cats+=`<details class="pcat" data-cat="${cat}"${pClosed.has(cat)?"":" open"}><summary><span>${LG==="eu"?CAT_EU[cat]:cat}</span><span class="mu">${n||""}</span></summary><div class="chips">${items.filter(x=>!D.phide.includes(x)).map(x=>{if(pEdit)return edChip(x,pLabel(x));const d=has.has(x)?dLeft(x):null;return`<button class="chip${d!==null&&d<=1?" late":d!==null&&d<=3?" soon":""}" data-pi="${esc(x)}" aria-pressed="${has.has(x)}">${esc(pLabel(x))}${d!==null&&d<=3?" ⏰":""}</button>`}).join("")}${cx(cat).map(cchip).join("")}</div></details>`}
+  if(cx("Otros").length)cats+=`<div class="pcat"><div class="mu" style="font-weight:700">${LL("Otros","Beste batzuk")}</div><div class="chips">${cx("Otros").map(cchip).join("")}</div></div>`;
+  const pend=D.pc.find(x=>!D.pcat[x]);
+  const ask=pend?`<div class="note"><b>${LL(`¿En qué categoría pongo «${esc(pend)}»?`,`Zein kategoriatan jarri «${esc(pend)}»?`)}</b><div class="chips" style="margin-top:6px">${[...Object.keys(CATS),"Otros"].map(c=>`<button class="chip" data-setcat="${c}" data-item="${esc(pend)}">${c==="Otros"?LL("Otros","Beste batzuk"):LG==="eu"?CAT_EU[c]:c}</button>`).join("")}</div></div>`:"";
   const res=CR.length?`<div class="row" id="cres"><h2>${LL("Ideas para hoy","Gaurko ideiak")}</h2><button class="b s" id="cmore">🔄 ${LL("Otras ideas","Beste ideia batzuk")}</button></div>${cMsg?`<div class="note">${esc(cMsg)}</div>`:""}${CR.map(cCard).join("")}`:
     (cRound<0?`<div class="note" id="cres">${LL("Con eso no me salen recetas. Marca algún ingrediente más o desmarca «Solo lo que tengo».","Horrekin ez zait errezetarik ateratzen. Markatu osagai gehiago edo desmarkatu «Dudanarekin bakarrik».")}</div>`:"");
   return `<section><h2>🧺 ${LL("Despensa","Jakitokia")}</h2><p class="mu" style="margin:-6px 0 0">${LL("Marca lo que tienes en casa. Lo usan la compra, el menú semanal y «¿Qué cocino hoy?».","Markatu etxean duzuna. Erosketak, asteko menuak eta «Zer sukaldatu gaur?» atalak erabiltzen dute.")}</p>
   ${expCard()}
   <div class="card"><div class="row"><h3 style="text-transform:none">${LL("En casa","Etxean")}</h3><span class="mu">${has.size} ${LL("ingredientes","osagai")}</span></div>
-  <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div>${cats}
-  <div><button class="b s" id="pclr">${LL("Desmarcar todo","Dena desmarkatu")}</button></div></div>
+  <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div>${ask}${pEdit?`<div class="note">${pRen!==null?`<b>${LL("Nuevo nombre para","Izen berria:")} «${esc(pLabel(pRen))}»</b><div class="ad" style="margin-top:6px"><input id="rnin" value="${esc(pLabel(pRen))}" autocomplete="off"><button class="b p" id="rnok">${LL("Guardar","Gorde")}</button></div>`:LL("Pulsa ✏️ para cambiar el nombre de un ingrediente o ✕ para quitarlo de la lista.","Sakatu ✏️ osagai baten izena aldatzeko edo ✕ zerrendatik kentzeko.")}</div>`:""}${cats}
+  <div class="row" style="justify-content:flex-start"><button class="b s" id="pclr">${LL("Desmarcar todo","Dena desmarkatu")}</button><button class="b s" id="pedit">${pEdit?LL("✓ Listo","✓ Eginda"):LL("✏️ Editar ingredientes","✏️ Osagaiak editatu")}</button>${D.phide.length?`<button class="b s" id="punhide">↩️ ${LL("Recuperar ocultos","Ezkutukoak berreskuratu")} (${D.phide.length})</button>`:""}</div></div>
   <details class="card rc" id="cook"${cookOpen?" open":""}><summary><b>🍳 ${LL("¿Qué cocino hoy?","Zer sukaldatu gaur?")}</b><span class="mu">${LL(`${FIXED.length} recetas + ${TEMPLATES.length} tipos que se crean con lo que tienes`,`${FIXED.length} errezeta + duzunarekin sortzen diren ${TEMPLATES.length} mota`)}</span></summary>
   <div class="fm"><div class="two">${cSel("meal",LL("Comida","Otordua"))}${cSel("time",LL("Tiempo máximo","Gehieneko denbora"))}</div><div class="two">${cSel("people",LL("Personas","Pertsonak"))}${cSel("style",LL("Estilo","Estiloa"))}</div>
   <label class="ck"><input type="checkbox" data-cp="veg"${D.cp.veg?" checked":""}> ${LL("Vegetariano","Begetarianoa")}</label><label class="ck"><input type="checkbox" data-cp="strict"${D.cp.strict?" checked":""}> ${LL("Solo lo que tengo (sin comprar nada)","Dudanarekin bakarrik (ezer erosi gabe)")}</label></div>
@@ -827,7 +834,7 @@ function tagOf(r){const k=r.ing.filter(x=>!x.opt).map(x=>x.k),h=a=>a.some(x=>k.i
 function slotOf(r){const m=MEALK[D.cp.meal];if(m==="d"||m==="c"||m==="n")return m;return r.meals.includes("c")?"c":r.meals.includes("n")?"n":"d"}
 document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
   if(t.dataset.pi){const k=t.dataset.pi;if(D.pan.includes(k)){D.pan=D.pan.filter(x=>x!==k);delete D.exp[k]}else{D.pan.push(k);setExp(k)}save();draw();return}
-  if(t.dataset.pcx){D.pc=D.pc.filter(x=>x!==t.dataset.pcx);delete D.exp[t.dataset.pcx];save();draw();return}
+  if(t.dataset.pcx){const x=t.dataset.pcx;if(D.pc.includes(x)){D.pc=D.pc.filter(y=>y!==x);delete D.exp[x]}else{D.pc.push(x);setExp(x)}save();draw();return}
   if(t.id==="padd"){const v=$("#pin").value;v.split(/[,;]/).forEach(x=>pAdd(x));save();draw();$("#pin").focus();return}
   if(t.id==="pclr"){D.pan=[];D.pc=[];D.exp={};save();draw();return}
   if(t.id==="cgo"||t.id==="cmore"){cookOpen=true;cSearch(t.id==="cmore");draw();const r=$("#cres");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});return}
@@ -860,12 +867,27 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
   if(t.dataset.cd){delete D.menu[t.dataset.cd];save();draw();return}});
 
 /* ---------- caducidades ---------- */
-D.exp=D.exp||{};let expAll=false;
+D.exp=D.exp||{};D.pcat=D.pcat||{};D.pren=D.pren||{};D.phide=D.phide||[];let expAll=false,pEdit=false,pRen=null;
+const edChip=(k,lbl)=>`<span class="chip ed"><button data-pren="${esc(k)}" aria-label="${LL("Cambiar nombre","Izena aldatu")}">✏️ ${esc(lbl)}</button><button data-pdel="${esc(k)}" aria-label="${LL("Quitar","Kendu")}">✕</button></span>`;
+function doRename(){const k=pRen,v=($("#rnin").value||"").trim().toLowerCase();pRen=null;if(!v){draw();return}
+  if(D.pcat[k]!==undefined){if(v!==k){D.pcat[v]=D.pcat[k];delete D.pcat[k];if(D.pc.includes(k))D.pc=D.pc.map(x=>x===k?v:x).filter((x,i,a)=>a.indexOf(x)===i);if(D.exp[k]){D.exp[v]=D.exp[k];delete D.exp[k]}}}
+  else{if(v===k||(LG==="eu"&&EU[k]&&v===EU[k][1]))delete D.pren[k];else D.pren[k]=v}save();draw()}
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="rnin")doRename()});
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+  if(t.id==="pedit"){pEdit=!pEdit;pRen=null;draw();return}
+  if(t.id==="punhide"){D.phide=[];save();draw();return}
+  if(t.dataset.pren){pRen=t.dataset.pren;draw();const i=$("#rnin");if(i){i.focus();i.select()}return}
+  if(t.id==="rnok"){doRename();return}
+  if(t.dataset.pdel){const x=t.dataset.pdel;D.pc=D.pc.filter(y=>y!==x);D.pan=D.pan.filter(y=>y!==x);delete D.exp[x];
+    if(D.pcat[x]!==undefined)delete D.pcat[x];else if(!D.phide.includes(x))D.phide.push(x);if(pRen===x)pRen=null;save();draw();return}});
+const CSHELF={"Verduras y hortalizas":7,"Frutas":7,"Carne y pescado":3,"Lácteos y huevos":7};
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t||!t.dataset.setcat)return;const it=t.dataset.item,c=t.dataset.setcat;
+  D.pcat[it]=c;if(CSHELF[c]&&!D.exp[it])D.exp[it]=iso(addD(new Date(),CSHELF[c]));save();draw()});
 const SHELF={"merluza":2,"salmón":2,"bacalao":2,"bonito":2,"sardinas":2,"pescadilla":2,"gambas":2,"almejas":1,"carne picada":2,"pollo":3,"pavo":3,"ternera":3,"lomo de cerdo":4,"bacon":10,"jamón serrano":14,"chorizo":30,
  "leche":7,"nata":7,"queso fresco":7,"mozzarella":7,"requesón":5,"yogur natural":14,"huevos":21,"queso rallado":21,"mantequilla":30,
  "lechuga":5,"espinacas":4,"champiñones":5,"tomate":7,"calabacín":7,"berenjena":7,"pimiento rojo":10,"pimiento verde":10,"pepino":7,"brócoli":5,"judías verdes":5,"puerro":10,"apio":14,"zanahoria":21,"calabaza":30,"cebolla":30,"ajo":60,"patata":30,"guisantes":4,
  "fresas":3,"plátano":6,"aguacate":4,"manzana":21,"naranja":14,"limón":21,"pan":3,"tortillas de trigo":14,"tomate frito":7,"caldo":4};
-function setExp(k){if(SHELF[k]!=null)D.exp[k]=iso(addD(new Date(),SHELF[k]))}
+function setExp(k){const n=SHELF[k]!=null?SHELF[k]:CSHELF[D.pcat[k]];if(n!=null)D.exp[k]=iso(addD(new Date(),n))}
 const dLeft=k=>{const e=D.exp[k];if(!e)return null;return Math.round((new Date(e+"T12:00")-new Date(today+"T12:00"))/864e5)};
 URG=k=>{const d=pSet().has(k)?dLeft(k):null;return d===null?0:d<=2?3:d<=5?1.2:0};
 const dTxt=d=>d<0?LL(`caducó hace ${-d} día${d<-1?"s":""}`,`duela ${-d} egun iraungi zen`):d===0?LL("caduca hoy","gaur iraungitzen da"):d===1?LL("caduca mañana","bihar iraungitzen da"):LL(`en ${d} días`,`${d} egun barru`);
