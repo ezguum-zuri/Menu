@@ -63,13 +63,14 @@ ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{co
 .b:disabled{opacity:.6;cursor:default}
 </style></head><body><div class="w">
 <div class="hero"><div><div class="lg"><button data-lg="es">Castellano</button><button data-lg="eu">Euskara</button></div><div class="k">Planificador saludable</div><h1>Menú</h1><p id="hd"></p></div><svg viewBox="0 0 170 120" aria-hidden="true"><ellipse cx="85" cy="110" rx="62" ry="6" fill="#000" opacity=".14"/><g transform="translate(138 28) rotate(18)"><ellipse rx="14" ry="19" fill="#4f8a3b"/><ellipse rx="11" ry="16" fill="#c8e08a"/><circle cy="4" r="6" fill="#8b5a2b"/></g><g transform="translate(26 30)"><circle r="15" fill="#f39a1f"/><circle r="12" fill="#ffc15a"/><path d="M0-12V12M-12 0H12M-8.5-8.5L8.5 8.5M8.5-8.5L-8.5 8.5" stroke="#f39a1f" stroke-width="1.5"/></g><path d="M22 60h126a63 46 0 0 1-126 0z" fill="#fff"/><ellipse cx="50" cy="56" rx="17" ry="11" fill="#6dbb6a"/><ellipse cx="72" cy="50" rx="16" ry="12" fill="#4ea85a"/><circle cx="96" cy="52" r="12" fill="#e8553f"/><circle cx="93" cy="48" r="3" fill="#f58b79"/><ellipse cx="119" cy="54" rx="14" ry="10" fill="#f6e7b4"/><circle cx="119" cy="53" r="6" fill="#f2a31b"/><ellipse cx="136" cy="59" rx="9" ry="6" fill="#9bd16b"/><path d="M22 60h126" stroke="#cfe3da" stroke-width="3"/><circle cx="62" cy="63" r="4" fill="#e8553f"/><circle cx="108" cy="64" r="3.5" fill="#e8553f"/><path d="M152 70c10-12 18-6 14 4-4 8-12 8-14-4z" fill="#6dbb6a"/></svg></div>
-<nav id="nav"><button data-t="sem"><span>🍽️</span>Semana</button><button data-t="cal"><span>📅</span>Calendario</button><button data-t="coc"><span>🥘</span>Cocinar</button><button data-t="rec"><span>📖</span>Recetas</button><button data-t="lis"><span>🛒</span>Compra</button></nav>
+<nav id="nav"><button data-t="sem"><span>🍽️</span>Semana</button><button data-t="cal"><span>📅</span>Calendario</button><button data-t="coc"><span>🧺</span>Despensa</button><button data-t="rec"><span>📖</span>Recetas</button><button data-t="lis"><span>🛒</span>Compra</button></nav>
 <main id="v"></main></div>
 <button class="hb" id="hb" aria-label="Cómo se usa">?</button>
 <div class="ov" id="hp" hidden><div class="sheet" role="dialog" aria-label="Cómo se usa"><h2>Cómo se usa</h2>
 <div class="hs"><i>🍽️</i><div><b>Semana</b><span>Pulsa «✨ Generar menú saludable» (o «Generar menú Carbohidratos») y se rellenan los desayunos, comidas y cenas. Puedes cambiar cualquier plato con el desplegable. El botón «Receta» te explica cómo prepararlo.</span></div></div>
+<div class="hs"><i>🗓️</i><div><b>Días sueltos</b><span>Marca en «Días a planificar» solo los días que estás en casa y el menú se genera únicamente para esos. Cada día tiene sus botones «✨ Generar día» y «🗑 Vaciar día».</span></div></div>
 <div class="hs"><i>📅</i><div><b>Calendario</b><span>Pulsa una «S» con su número (S45, S46…) para elegir una semana entera. Ahí puedes generar o vaciar su menú y ver los siete días. Pulsa un día para editarlo. Con las flechas cambias de mes.</span></div></div>
-<div class="hs"><i>🥘</i><div><b>Cocinar</b><span>Marca lo que tienes en casa (tu despensa) y te propongo recetas: del recetario o creadas con tus ingredientes. «📖 Guardar en Recetas» la pasa a tus recetas para usarla en el menú, y «🛒» añade a la compra lo que falta.</span></div></div>
+<div class="hs"><i>🧺</i><div><b>Despensa</b><span>Marca lo que tienes en casa. Debajo, en «🍳 ¿Qué cocino hoy?», te propongo recetas con esos ingredientes: del recetario o creadas con lo que tienes. «📖 Guardar en Recetas» la pasa a tus recetas para usarla en el menú, y «🛒» añade a la compra lo que falta.</span></div></div>
 <div class="hs"><i>📖</i><div><b>Recetas</b><span>Todas las recetas con ingredientes, pasos y el porcentaje de carbohidratos, proteínas y grasas. Filtra por desayunos, comidas o cenas. Abajo puedes añadir las tuyas.</span></div></div>
 <div class="hs"><i>🛒</i><div><b>Compra</b><span>Salen los ingredientes que necesita el menú de la semana, ya marcados. Desmarca los que ya tienes en casa. Puedes añadir más escribiéndolos arriba o desde «Otros ingredientes».</span></div></div>
 <div class="hs"><i>🧺</i><div><b>Despensa y compra</b><span>Lo que está en tu despensa sale en la compra como «en casa», y al generar el menú tienen prioridad las recetas con lo que ya tienes. Al volver del súper, pulsa «✅ Ya lo he comprado» y pasa todo a la despensa.</span></div></div>
@@ -205,18 +206,18 @@ function vSem(){
   const rs=weekIds(),c={},xs=rs.filter(r=>r.x),avg=xs.length?Math.round(xs.reduce((p,r)=>p+r.x[0],0)/xs.length):0;rs.filter(r=>r.k!=="d").forEach(r=>c[r.t]=(c[r.t]||0)+1);
   const hint=!rs.length?"Aún no hay menú esta semana. Pulsa «Generar menú saludable» y lo preparo con pescado, legumbres, verdura y poca carne roja.":[(c.p||0)<2&&"Te falta pescado (objetivo: 2 o más).",(c.l||0)<2&&"Te faltan legumbres (objetivo: 2 o más).",(c.r||0)>1&&"Hay más de una carne roja: conviene limitarla."].filter(Boolean).join(" ")||"Equilibrio semanal correcto: pescado, legumbres y poca carne roja.";
   let h=`<section><div class="row"><button class="b" data-w="-7">←</button><h2>${fmt(wk)} – ${fmt(addD(wk,6))}</h2><button class="b" data-w="7">→</button></div>
-  <div class="row"><button class="b p" id="gen">✨ Generar menú saludable</button><button class="b p" id="gen2">Generar menú Carbohidratos</button><button class="b" id="clr">Vaciar</button></div>
+  <div class="row"><button class="b p" id="gen">✨ Generar menú saludable</button><button class="b p" id="gen2">Generar menú Carbohidratos</button><button class="b" id="clr">Vaciar</button></div>${daySel()}
   <div class="note">${D.mode[iso(wk)]==="carb"&&rs.length?`Menú con más carga de carbohidratos: de media ${avg}% de las calorías vienen de carbohidratos.`:hint}</div>${rs.length?`<div class="sum">${Object.keys(c).map(t=>`${tg(t)}<b>${c[t]}</b>`).join(" ")}</div>`:""}`;
-  for(let i=0;i<7;i++){const d=addD(wk,i),ds=iso(d);h+=`<div class="card${ds===today?" today":""}"><div class="dh"><b>${DN[i]}</b><span class="mu">${fmt(d)}</span></div>${slot(ds,"d")}${slot(ds,"c")}${slot(ds,"n")}</div>`}
+  for(let i=0;i<7;i++){const d=addD(wk,i),ds=iso(d);h+=`<div class="card${ds===today?" today":""}"><div class="dh"><b>${DN[i]}</b><span class="mu">${fmt(d)}</span></div>${dayBtns(ds)}${slot(ds,"d")}${slot(ds,"c")}${slot(ds,"n")}</div>`}
   return h+'<p class="mu">Macros: porcentaje de las calorías que aporta cada nutriente (carbohidratos, proteínas y grasas). Son valores orientativos para una ración media.</p></section>'}
 const wrow=i=>{const d=addD(wk,i),ds=iso(d),m=D.menu[ds]||{},L=k=>{const r=m[k]&&byId(m[k]);return`<div><span class="mu">${KN[k]}:</span> ${r?esc(rn(r)):"—"}</div>`};
-  return`<button class="wr${ds===sel?" on":""}" data-day="${ds}"><b>${DS[i]} ${d.getDate()}</b><span>${L("d")}${L("c")}${L("n")}</span></button>${ds===sel?`<div class="rb" id="wsel">${slot(ds,"d")}${slot(ds,"c")}${slot(ds,"n")}</div>`:""}`};
+  return`<button class="wr${ds===sel?" on":""}" data-day="${ds}"><b>${DS[i]} ${d.getDate()}</b><span>${L("d")}${L("c")}${L("n")}</span></button>${ds===sel?`<div class="rb" id="wsel">${dayBtns(ds)}${slot(ds,"d")}${slot(ds,"c")}${slot(ds,"n")}</div>`:""}`};
 function sw(){if(tab==="cal"){const e=$("#wm");if(e)e.scrollIntoView({block:"start"})}}
 const wn=d=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);return Math.ceil(((t-new Date(Date.UTC(t.getUTCFullYear(),0,1)))/864e5+1)/7)};
 function vCal(){
   const y=mo.getFullYear(),m=mo.getMonth(),lead=(new Date(y,m,1,12).getDay()+6)%7,n=new Date(y,m+1,0).getDate(),cs=[];
   for(let i=0;i<lead;i++)cs.push(null);for(let d=1;d<=n;d++)cs.push(new Date(y,m,d,12));while(cs.length%7)cs.push(null);
-  const cw=iso(wk);let g="<div></div>"+(LG==="eu"?"AAAOOLI":"LMXJVSD").split("").map(x=>`<div class="hd">${x}</div>`).join("");
+  const cw=iso(wk);let g="<div></div>"+(LG==="eu"?["Al","Ar","Az","Og","Or","Lr","Ig"]:"LMXJVSD".split("")).map(x=>`<div class="hd">${x}</div>`).join("");
   for(let r=0;r<cs.length;r+=7){const row=cs.slice(r,r+7),mw=mon(row.find(Boolean)),inw=iso(mw)===cw;
     g+=`<button class="wkb${inw?" on":""}" data-wk="${iso(mw)}" aria-label="Seleccionar semana">${LG==="eu"?"A":"S"}${wn(mw)}</button>`;
     row.forEach(d=>{if(!d){g+="<i></i>";return}const ds=iso(d),mm=D.menu[ds]||{};
@@ -224,9 +225,9 @@ function vCal(){
   const sd=new Date(sel+"T12:00"),wm=[0,1,2,3,4,5,6].map(wrow).join("");
   return `<section><div class="row"><button class="b" data-m="-1">←</button><h2 style="text-transform:capitalize">${mo.toLocaleDateString(LOC(),{month:"long",year:"numeric"})}</h2><button class="b" data-m="1">→</button></div>
   <div class="cal">${g}</div><p class="mu">Pulsa S + número para seleccionar una semana entera, o un día para ver solo ese día. ● rosa = desayuno · ● verde = comida · ● naranja = cena</p>
-  <div class="card"><h3 style="text-transform:none">Semana ${fmt(wk)} – ${fmt(addD(wk,6))}</h3><div class="row"><button class="b p" id="gen">✨ Generar menú saludable</button><button class="b p" id="gen2">Generar menú Carbohidratos</button></div><div class="row"><button class="b" id="vw">Abrir en la pestaña Semana</button><button class="b" id="clr">Vaciar semana</button></div></div>
+  <div class="card"><h3 style="text-transform:none">Semana ${fmt(wk)} – ${fmt(addD(wk,6))}</h3><div class="row"><button class="b p" id="gen">✨ Generar menú saludable</button><button class="b p" id="gen2">Generar menú Carbohidratos</button></div>${daySel()}<div class="row"><button class="b" id="vw">Abrir en la pestaña Semana</button><button class="b" id="clr">Vaciar semana</button></div></div>
   <div class="card" id="wm"><h3 style="text-transform:none">Menú de la semana</h3>${wm}<p class="mu">Pulsa un día y se abre justo debajo para cambiar sus platos o ver la receta. Púlsalo otra vez para cerrarlo.</p></div>
-  ${sel&&(sel<iso(wk)||sel>iso(addD(wk,6)))?`<div class="card"><h3>${sd.toLocaleDateString(LOC(),{weekday:"long",day:"numeric",month:"long"})}</h3>${slot(sel,"d")}${slot(sel,"c")}${slot(sel,"n")}</div>`:""}</section>`}
+  ${sel&&(sel<iso(wk)||sel>iso(addD(wk,6)))?`<div class="card"><h3>${sd.toLocaleDateString(LOC(),{weekday:"long",day:"numeric",month:"long"})}</h3>${dayBtns(sel)}${slot(sel,"d")}${slot(sel,"c")}${slot(sel,"n")}</div>`:""}</section>`}
 const steps=r=>{const a=(r.s||(LG==="eu"&&SE[r.id])||ST[r.id]||"").split("|").map(x=>x.trim()).filter(Boolean);return a.length?`<b>Paso a paso</b><ol class="st">${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`:""};
 function vRec(){
   const l=allR().filter(r=>!F||r.k===F);
@@ -242,7 +243,7 @@ function vLis(){const{c,ex,hv,names,buy}=shop();
   const others=[...new Set(allR().flatMap(r=>r.i))].filter(x=>!names.includes(x)).sort((a,b)=>a.localeCompare(b,"es"));
   return `<section><div class="row"><button class="b" data-w="-7">←</button><h2>Compra ${fmt(wk)} – ${fmt(addD(wk,6))}</h2><button class="b" data-w="7">→</button></div>
   <div class="ad"><input id="ne" placeholder="Añadir ingrediente o producto…" autocomplete="off"><button class="b p" id="ae">Añadir</button></div>
-  <p class="mu">Solo están marcados los ingredientes que necesitan los menús de esta semana. Desmarca lo que ya tengas en casa; el resto de ingredientes están abajo, sin marcar. <b>${buy.length}</b> por comprar.</p><p class="mu">🧺 ${LL("Lo que tienes en la despensa (pestaña Cocinar) sale como «en casa».","Jakitokian duzuna (Sukaldatu fitxa) «etxean» gisa agertzen da.")}</p>
+  <p class="mu">Solo están marcados los ingredientes que necesitan los menús de esta semana. Desmarca lo que ya tengas en casa; el resto de ingredientes están abajo, sin marcar. <b>${buy.length}</b> por comprar.</p><p class="mu">🧺 ${LL("Lo que tienes en la Despensa sale como «en casa».","Jakitokian duzuna «etxean» gisa agertzen da.")}</p>
   <div>${names.map(x=>`<div class="it${hv[x]?" d":""}"><input type="checkbox" data-hv="${esc(x)}"${hv[x]?"":" checked"}><span>${esc(cap(x))}</span>${ex.includes(x)&&!c[x]?`<button class="b s" data-de="${esc(x)}" aria-label="Quitar">×</button>`:hv[x]?'<span class="mu">en casa</span>':`<span class="mu">${c[x]>1?"×"+c[x]:""}</span>`}</div>`).join("")||'<div class="note">Genera el menú de esta semana o añade productos a mano y aparecerán aquí.</div>'}</div>
   <details class="card" id="ox"${oxOpen?" open":""}><summary><b>Otros ingredientes</b> <span class="mu">(${others.length}) · marca los que quieras añadir</span></summary><div>${others.map(x=>`<div class="it"><input type="checkbox" data-ox="${esc(x)}"><span>${esc(cap(x))}</span><span></span></div>`).join("")}</div></details>
   ${buy.length?`<button class="b" id="bought">✅ ${LL("Ya lo he comprado → a la despensa","Erosita daukat → jakitokira")}</button>`:""}
@@ -258,7 +259,7 @@ function gen(mode){
     pshuf(pool.filter(r=>!out.includes(r))).forEach(r=>{if(out.length<7&&!(r.t==="r"&&out.some(o=>o.t==="r")))out.push(r)});return shuf(out)};
   const carb=k=>shuf(allR().filter(r=>r.k===k).map(r=>[(r.x?r.x[0]:30)+Math.random()*12+cov(r)*10,r]).sort((p,q)=>q[0]-p[0]).slice(0,7).map(x=>x[1])),cb=mode==="carb";
   const d=cb?carb("d"):pick("d",[]),c=cb?carb("c"):pick("c",[["l",2],["p",2],["a",1]]),n=cb?carb("n"):pick("n",[["p",1],["h",1],["a",1],["v",1]]);
-  for(let i=0;i<7;i++)D.menu[iso(addD(wk,i))]={d:d[i]&&d[i].id,c:c[i]&&c[i].id,n:n[i]&&n[i].id};D.mode[iso(wk)]=cb?"carb":"sano";delete D.have[iso(wk)];save();draw()}
+  let j=0;for(let i=0;i<7;i++){if(!DAYS().includes(i))continue;D.menu[iso(addD(wk,i))]={d:d[j]&&d[j].id,c:c[j]&&c[j].id,n:n[j]&&n[j].id};j++}D.mode[iso(wk)]=cb?"carb":"sano";delete D.have[iso(wk)];save();draw()}
 document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
   if(t.dataset.lg){setLang(t.dataset.lg);return}
   if(t.dataset.rc){OP.has(t.dataset.rc)?OP.delete(t.dataset.rc):OP.add(t.dataset.rc);draw();return}
@@ -767,7 +768,7 @@ function pAdd(raw){const x=String(raw).trim().toLowerCase();if(!x)return;const n
 {const old=D.pc;D.pc=[];old.forEach(pAdd);}
 const pLabel=k=>LG==="eu"&&EU[k]?EU[k][1]:k;
 
-let CR=[],cRound=0,cShown=new Set(),cOpen=new Set(),pClosed=new Set(),cMsg="";
+let cookOpen=false,CR=[],cRound=0,cShown=new Set(),cOpen=new Set(),pClosed=new Set(),cMsg="";
 const DIF={"Fácil":"Erraza","Media":"Ertaina","Difícil":"Zaila"};
 const OPTS={meal:[["Cualquiera","Edozein"],["Desayuno","Gosaria"],["Comida","Bazkaria"],["Cena","Afaria"],["Postre","Postrea"],["Para llevar (tupper)","Eramateko (tupperra)"]],
   time:[["15","15 min"],["30","30 min"],["45","45 min"],["60","1 h"],["999",null]],people:[["1"],["2"],["3"],["4"],["5"],["6"]],
@@ -794,13 +795,14 @@ function vCoc(){
   if(D.pc.length)cats+=`<div class="pcat"><div class="mu" style="font-weight:700">${LL("Otros","Beste batzuk")}</div><div class="chips">${D.pc.map(x=>`<button class="chip" data-pcx="${esc(x)}" aria-pressed="true">${esc(x)} ×</button>`).join("")}</div></div>`;
   const res=CR.length?`<div class="row" id="cres"><h2>${LL("Ideas para hoy","Gaurko ideiak")}</h2><button class="b s" id="cmore">🔄 ${LL("Otras ideas","Beste ideia batzuk")}</button></div>${cMsg?`<div class="note">${esc(cMsg)}</div>`:""}${CR.map(cCard).join("")}`:
     (cRound<0?`<div class="note" id="cres">${LL("Con eso no me salen recetas. Marca algún ingrediente más o desmarca «Solo lo que tengo».","Horrekin ez zait errezetarik ateratzen. Markatu osagai gehiago edo desmarkatu «Dudanarekin bakarrik».")}</div>`:"");
-  return `<section><h2>${LL("¿Qué cocino hoy?","Zer sukaldatu gaur?")}</h2><p class="mu" style="margin:-6px 0 0">${LL(`Marca lo que tienes en casa y te propongo recetas: ${FIXED.length} del recetario y ${TEMPLATES.length} tipos que se crean con tus ingredientes.`,`Markatu etxean duzuna eta errezetak proposatuko dizkizut: errezeta-liburuko ${FIXED.length} eta zure osagaiekin sortzen diren ${TEMPLATES.length} mota.`)}</p>
-  <div class="card"><div class="row"><h3 style="text-transform:none">🧺 ${LL("Mi despensa","Nire jakitokia")}</h3><span class="mu">${has.size} ${LL("ingredientes","osagai")}</span></div>
+  return `<section><h2>🧺 ${LL("Despensa","Jakitokia")}</h2><p class="mu" style="margin:-6px 0 0">${LL("Marca lo que tienes en casa. Lo usan la compra, el menú semanal y «¿Qué cocino hoy?».","Markatu etxean duzuna. Erosketak, asteko menuak eta «Zer sukaldatu gaur?» atalak erabiltzen dute.")}</p>
+  <div class="card"><div class="row"><h3 style="text-transform:none">${LL("En casa","Etxean")}</h3><span class="mu">${has.size} ${LL("ingredientes","osagai")}</span></div>
   <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div>${cats}
   <div><button class="b s" id="pclr">${LL("Desmarcar todo","Dena desmarkatu")}</button></div></div>
-  <div class="card"><h3 style="text-transform:none">${LL("Preferencias","Hobespenak")}</h3><div class="fm"><div class="two">${cSel("meal",LL("Comida","Otordua"))}${cSel("time",LL("Tiempo máximo","Gehieneko denbora"))}</div><div class="two">${cSel("people",LL("Personas","Pertsonak"))}${cSel("style",LL("Estilo","Estiloa"))}</div>
+  <details class="card rc" id="cook"${cookOpen?" open":""}><summary><b>🍳 ${LL("¿Qué cocino hoy?","Zer sukaldatu gaur?")}</b><span class="mu">${LL(`${FIXED.length} recetas + ${TEMPLATES.length} tipos que se crean con lo que tienes`,`${FIXED.length} errezeta + duzunarekin sortzen diren ${TEMPLATES.length} mota`)}</span></summary>
+  <div class="fm"><div class="two">${cSel("meal",LL("Comida","Otordua"))}${cSel("time",LL("Tiempo máximo","Gehieneko denbora"))}</div><div class="two">${cSel("people",LL("Personas","Pertsonak"))}${cSel("style",LL("Estilo","Estiloa"))}</div>
   <label class="ck"><input type="checkbox" data-cp="veg"${D.cp.veg?" checked":""}> ${LL("Vegetariano","Begetarianoa")}</label><label class="ck"><input type="checkbox" data-cp="strict"${D.cp.strict?" checked":""}> ${LL("Solo lo que tengo (sin comprar nada)","Dudanarekin bakarrik (ezer erosi gabe)")}</label></div>
-  <button class="b p" id="cgo">🔎 ${LL("Buscar recetas","Errezetak bilatu")}</button></div>${res}</section>`;
+  <button class="b p" id="cgo">🔎 ${LL("Buscar recetas","Errezetak bilatu")}</button></details>${res}</section>`;
 }
 function cSearch(more){
   if(!pSet().size){CR=[];cRound=-1;return}
@@ -819,7 +821,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
   if(t.dataset.pcx){D.pc=D.pc.filter(x=>x!==t.dataset.pcx);save();draw();return}
   if(t.id==="padd"){const v=$("#pin").value;v.split(/[,;]/).forEach(pAdd);save();draw();$("#pin").focus();return}
   if(t.id==="pclr"){D.pan=[];D.pc=[];save();draw();return}
-  if(t.id==="cgo"||t.id==="cmore"){cSearch(t.id==="cmore");draw();const r=$("#cres");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});return}
+  if(t.id==="cgo"||t.id==="cmore"){cookOpen=true;cSearch(t.id==="cmore");draw();const r=$("#cres");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});return}
   if(t.dataset.csv){const o=CR[+t.dataset.csv],tx=o.r.txt(LG);
     D.rec.push({id:"u"+Date.now().toString(36),n:tx.nombre,k:slotOf(o.r),t:tagOf(o.r),m:o.r.tiempo,i:o.r.ing.filter(x=>!x.opt&&!NOCOUNT.includes(x.k)).map(x=>x.k),s:tx.pasos.join("|")});
     cMsg=LL(`«${tx.nombre}» está ahora en Recetas y la puedes elegir en el menú.`,`«${tx.nombre}» Errezetetan dago orain, eta menuan aukera dezakezu.`);save();draw();return}
@@ -830,21 +832,36 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
 });
 document.addEventListener("change",e=>{const t=e.target;if(!t.dataset.cp)return;const f=t.dataset.cp;D.cp[f]=t.type==="checkbox"?t.checked:t.value;save()});
 document.addEventListener("toggle",e=>{const t=e.target;
+  if(t.id==="cook")cookOpen=t.open;
   if(t.dataset&&t.dataset.cat){t.open?pClosed.delete(t.dataset.cat):pClosed.add(t.dataset.cat)}
   if(t.dataset&&t.dataset.cr!==undefined){t.open?cOpen.add(t.dataset.cr):cOpen.delete(t.dataset.cr)}},true);
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="pin")$("#padd").click()});
 
+D.days=Array.isArray(D.days)&&D.days.length?D.days:[0,1,2,3,4,5,6];const DAYS=()=>D.days;
+const daySel=()=>`<div class="card" style="gap:6px"><div class="mu">${LL("Días a planificar (al generar se rellenan solo los marcados):","Planifikatzeko egunak (sortzean markatutakoak bakarrik betetzen dira):")}</div><div class="chips">${DN.map((n,i)=>`<button class="chip" data-dw="${i}" aria-pressed="${D.days.includes(i)}">${n}</button>`).join("")}</div></div>`;
+const dayBtns=ds=>`<div class="row" style="justify-content:flex-start;gap:6px"><button class="b s" data-gd="${ds}">✨ ${LL("Generar día","Eguna sortu")}</button>${ds===today&&!(D.menu[ds]&&Object.values(D.menu[ds]).some(Boolean))?`<button class="b s" data-goc="1">🍳 ${LL("¿Qué cocino hoy?","Zer sukaldatu gaur?")}</button>`:""}${D.menu[ds]&&Object.values(D.menu[ds]).some(Boolean)?`<button class="b s" data-cd="${ds}">🗑 ${LL("Vaciar día","Eguna garbitu")}</button>`:""}</div>`;
+function genDay(ds){const w=mon(new Date(ds+"T12:00")),used=new Set();
+  for(let i=0;i<7;i++){const m=D.menu[iso(addD(w,i))]||{};["d","c","n"].forEach(k=>m[k]&&used.add(m[k]))}
+  const o={};["d","c","n"].forEach(k=>{const pool=allR().filter(r=>r.k===k),nw=pool.filter(r=>!used.has(r.id)),r=pshuf(nw.length?nw:pool)[0];if(r)o[k]=r.id});
+  D.menu[ds]=o;save();draw()}
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.dw!==undefined){const i=+t.dataset.dw;D.days=D.days.includes(i)?D.days.filter(x=>x!==i):[...D.days,i].sort();if(!D.days.length)D.days=[i];save();draw();return}
+  if(t.dataset.gd){genDay(t.dataset.gd);return}
+  if(t.dataset.goc){tab="coc";cookOpen=true;draw();const c=$("#cook");if(c)c.scrollIntoView({block:"start"});return}
+  if(t.dataset.cd){delete D.menu[t.dataset.cd];save();draw();return}});
 const cov=r=>{const a=r.i.filter(x=>!NOCOUNT.includes(x));return a.length?a.filter(haveIng).length/a.length:0};
 const pshuf=a=>pSet().size>3?a.map(r=>[Math.random()+cov(r)*0.7,r]).sort((p,q)=>q[0]-p[0]).map(x=>x[1]):shuf(a);
 /* ---------- idiomas ---------- */
 const LOC=()=>LG==="eu"?"eu-ES":"es-ES";
-const DNS=DN.slice(),DNE=["Astelehena","Asteartea","Asteazkena","Osteguna","Ostirala","Larunbata","Igandea"],DSS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],DSE=["al.","ar.","az.","og.","ol.","lr.","ig."];
+const DNS=DN.slice(),DNE=["Astelehena","Asteartea","Asteazkena","Osteguna","Ostirala","Larunbata","Igandea"],DSS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],DSE=["al.","ar.","az.","og.","or.","lr.","ig."];
 let DS=DSS;
 const TN={es:{l:"Legumbre",p:"Pescado",a:"Ave",h:"Huevo",r:"Carne roja",v:"Verdura",c:"Cereal",f:"Desayuno"},eu:{l:"Lekaleak",p:"Arraina",a:"Hegaztia",h:"Arrautza",r:"Okela gorria",v:"Barazkia",c:"Zerealak",f:"Gosaria"}};
 const EX=Object.fromEntries(`Planificador saludable => Plangintza osasuntsua
-Cocinar => Sukaldatu
+Despensa => Jakitokia
+Días sueltos => Egun solteak
+Marca en «Días a planificar» solo los días => Markatu «Planifikatzeko egunak» atalean etxean zauden egunak bakarrik, eta menua egun horietarako bakarrik sortuko da. Egun bakoitzak bere botoiak ditu: «✨ Eguna sortu» eta «🗑 Eguna garbitu».
 Despensa y compra => Jakitokia eta erosketa
-Marca lo que tienes en casa (tu despensa) => Markatu etxean duzuna (zure jakitokia) eta errezetak proposatuko dizkizut: errezeta-liburukoak edo zure osagaiekin sortuak. «📖 Errezetetan gorde» botoiak zure errezetetara pasatzen du menuan erabiltzeko, eta «🛒» botoiak falta dena erosketara gehitzen du.
+Marca lo que tienes en casa. Debajo => Markatu etxean duzuna. Azpian, «🍳 Zer sukaldatu gaur?» atalean, osagai horiekin errezetak proposatuko dizkizut: errezeta-liburukoak edo duzunarekin sortuak. «📖 Errezetetan gorde» botoiak zure errezetetara pasatzen du menuan erabiltzeko, eta «🛒» botoiak falta dena erosketara gehitzen du.
 Lo que está en tu despensa sale en la compra => Jakitokian duzuna erosketan «etxean» gisa agertzen da, eta menua sortzean lehentasuna dute etxean duzunarekin egiten diren errezetek. Supermerkatutik itzultzean, sakatu «✅ Erosita daukat» eta dena jakitokira pasatzen da.
 Menú => Menua
 Semana => Astea
