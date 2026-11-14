@@ -244,7 +244,7 @@ function shop(){const w=iso(wk),c={};weekIds().forEach(r=>r.i.forEach(x=>c[x]=(c
   const ex=D.ext[w]||[],h0=D.have[w]||{},names=[...new Set([...Object.keys(c),...ex])].sort((a,b)=>a.localeCompare(b,"es")),hv={};
   names.forEach(x=>{if(h0[x]!==undefined)hv[x]=h0[x];else if(haveIng(x))hv[x]=true});return{c,ex,hv,names,buy:names.filter(x=>!hv[x])}}
 const cap=x=>{x=ig(x);return x.charAt(0).toUpperCase()+x.slice(1)};
-const listText=()=>{const{c,buy}=shop();return buy.map(x=>cap(x)+(c[x]>1?" ×"+c[x]:"")).join("\n")};
+const listText=()=>{const{c,buy}=shop();return buy.map(x=>cap(x)).join("\n")};
 function vLis(){const{c,ex,hv,names,buy}=shop();
   const others=[...new Set(allR().flatMap(r=>r.i))].filter(x=>!names.includes(x)).sort((a,b)=>a.localeCompare(b,"es"));
   return `<section><div class="row"><button class="b" data-w="-7">←</button><h2>Compra ${fmt(wk)} – ${fmt(addD(wk,6))}</h2><button class="b" data-w="7">→</button></div>
