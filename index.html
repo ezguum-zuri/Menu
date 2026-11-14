@@ -61,6 +61,10 @@ textarea{resize:none;line-height:1.5}
 ul.ing{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:14px}ul.ing i{font-style:normal;display:inline-block;width:16px;color:var(--a2)}
 ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{color:var(--mu)}ul.ing em{font-style:normal;color:var(--ac)}
 .b:disabled{opacity:.6;cursor:default}
+.chip.soon{border-color:#e0a54a;border-width:2px}.chip.late{border-color:var(--bad);border-width:2px}
+.ex{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln);font-size:14px}.ex input{width:auto;padding:5px 6px;font-size:13px}
+.ex .soon .mu{color:#c27c12;font-weight:600}.ex .late .mu{color:var(--bad);font-weight:600}
+.note.warnb{background:hsl(35 80% var(--tb));color:hsl(30 70% var(--tf))}
 </style></head><body><div class="w">
 <div class="hero"><div><div class="lg"><button data-lg="es">Castellano</button><button data-lg="eu">Euskara</button></div><div class="k">Planificador saludable</div><h1>Menú</h1><p id="hd"></p></div><svg viewBox="0 0 170 120" aria-hidden="true"><ellipse cx="85" cy="110" rx="62" ry="6" fill="#000" opacity=".14"/><g transform="translate(138 28) rotate(18)"><ellipse rx="14" ry="19" fill="#4f8a3b"/><ellipse rx="11" ry="16" fill="#c8e08a"/><circle cy="4" r="6" fill="#8b5a2b"/></g><g transform="translate(26 30)"><circle r="15" fill="#f39a1f"/><circle r="12" fill="#ffc15a"/><path d="M0-12V12M-12 0H12M-8.5-8.5L8.5 8.5M8.5-8.5L-8.5 8.5" stroke="#f39a1f" stroke-width="1.5"/></g><path d="M22 60h126a63 46 0 0 1-126 0z" fill="#fff"/><ellipse cx="50" cy="56" rx="17" ry="11" fill="#6dbb6a"/><ellipse cx="72" cy="50" rx="16" ry="12" fill="#4ea85a"/><circle cx="96" cy="52" r="12" fill="#e8553f"/><circle cx="93" cy="48" r="3" fill="#f58b79"/><ellipse cx="119" cy="54" rx="14" ry="10" fill="#f6e7b4"/><circle cx="119" cy="53" r="6" fill="#f2a31b"/><ellipse cx="136" cy="59" rx="9" ry="6" fill="#9bd16b"/><path d="M22 60h126" stroke="#cfe3da" stroke-width="3"/><circle cx="62" cy="63" r="4" fill="#e8553f"/><circle cx="108" cy="64" r="3.5" fill="#e8553f"/><path d="M152 70c10-12 18-6 14 4-4 8-12 8-14-4z" fill="#6dbb6a"/></svg></div>
 <nav id="nav"><button data-t="sem"><span>🍽️</span>Semana</button><button data-t="cal"><span>📅</span>Calendario</button><button data-t="coc"><span>🧺</span>Despensa</button><button data-t="rec"><span>📖</span>Recetas</button><button data-t="lis"><span>🛒</span>Compra</button></nav>
@@ -71,6 +75,7 @@ ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{co
 <div class="hs"><i>🗓️</i><div><b>Días sueltos</b><span>Marca en «Días a planificar» solo los días que estás en casa y el menú se genera únicamente para esos. Cada día tiene sus botones «✨ Generar día» y «🗑 Vaciar día».</span></div></div>
 <div class="hs"><i>📅</i><div><b>Calendario</b><span>Pulsa una «S» con su número (S45, S46…) para elegir una semana entera. Ahí puedes generar o vaciar su menú y ver los siete días. Pulsa un día para editarlo. Con las flechas cambias de mes.</span></div></div>
 <div class="hs"><i>🧺</i><div><b>Despensa</b><span>Marca lo que tienes en casa. Debajo, en «🍳 ¿Qué cocino hoy?», te propongo recetas con esos ingredientes: del recetario o creadas con lo que tienes. «📖 Guardar en Recetas» la pasa a tus recetas para usarla en el menú, y «🛒» añade a la compra lo que falta.</span></div></div>
+<div class="hs"><i>⏰</i><div><b>Caducidades</b><span>Al marcar o comprar algo fresco se le pone una fecha de caducidad estimada, que puedes cambiar por la del envase. Arriba de la Despensa ves qué gastar primero y en la Semana te avisa de lo que caduca en dos días. Al buscar recetas, se priorizan las que lo aprovechan.</span></div></div>
 <div class="hs"><i>📖</i><div><b>Recetas</b><span>Todas las recetas con ingredientes, pasos y el porcentaje de carbohidratos, proteínas y grasas. Filtra por desayunos, comidas o cenas. Abajo puedes añadir las tuyas.</span></div></div>
 <div class="hs"><i>🛒</i><div><b>Compra</b><span>Salen los ingredientes que necesita el menú de la semana, ya marcados. Desmarca los que ya tienes en casa. Puedes añadir más escribiéndolos arriba o desde «Otros ingredientes».</span></div></div>
 <div class="hs"><i>🧺</i><div><b>Despensa y compra</b><span>Lo que está en tu despensa sale en la compra como «en casa», y al generar el menú tienen prioridad las recetas con lo que ya tienes. Al volver del súper, pulsa «✅ Ya lo he comprado» y pasa todo a la despensa.</span></div></div>
@@ -207,7 +212,7 @@ function vSem(){
   const hint=!rs.length?"Aún no hay menú esta semana. Pulsa «Generar menú saludable» y lo preparo con pescado, legumbres, verdura y poca carne roja.":[(c.p||0)<2&&"Te falta pescado (objetivo: 2 o más).",(c.l||0)<2&&"Te faltan legumbres (objetivo: 2 o más).",(c.r||0)>1&&"Hay más de una carne roja: conviene limitarla."].filter(Boolean).join(" ")||"Equilibrio semanal correcto: pescado, legumbres y poca carne roja.";
   let h=`<section><div class="row"><button class="b" data-w="-7">←</button><h2>${fmt(wk)} – ${fmt(addD(wk,6))}</h2><button class="b" data-w="7">→</button></div>
   <div class="row"><button class="b p" id="gen">✨ Generar menú saludable</button><button class="b p" id="gen2">Generar menú Carbohidratos</button><button class="b" id="clr">Vaciar</button></div>${daySel()}
-  <div class="note">${D.mode[iso(wk)]==="carb"&&rs.length?`Menú con más carga de carbohidratos: de media ${avg}% de las calorías vienen de carbohidratos.`:hint}</div>${rs.length?`<div class="sum">${Object.keys(c).map(t=>`${tg(t)}<b>${c[t]}</b>`).join(" ")}</div>`:""}`;
+  ${expBanner()}<div class="note">${D.mode[iso(wk)]==="carb"&&rs.length?`Menú con más carga de carbohidratos: de media ${avg}% de las calorías vienen de carbohidratos.`:hint}</div>${rs.length?`<div class="sum">${Object.keys(c).map(t=>`${tg(t)}<b>${c[t]}</b>`).join(" ")}</div>`:""}`;
   for(let i=0;i<7;i++){const d=addD(wk,i),ds=iso(d);h+=`<div class="card${ds===today?" today":""}"><div class="dh"><b>${DN[i]}</b><span class="mu">${fmt(d)}</span></div>${dayBtns(ds)}${slot(ds,"d")}${slot(ds,"c")}${slot(ds,"n")}</div>`}
   return h+'<p class="mu">Macros: porcentaje de las calorías que aporta cada nutriente (carbohidratos, proteínas y grasas). Son valores orientativos para una ración media.</p></section>'}
 const wrow=i=>{const d=addD(wk,i),ds=iso(d),m=D.menu[ds]||{},L=k=>{const r=m[k]&&byId(m[k]);return`<div><span class="mu">${KN[k]}:</span> ${r?esc(rn(r)):"—"}</div>`};
@@ -492,7 +497,8 @@ const listCom = keys => joinE([...keys.slice(0,-1).map(bareE), comE(keys[keys.le
 const ingName = (k, lg) => lg==="eu" ? defE(k) : k;
 
 function rng(seed){ let a=(seed*2654435761)>>>0||1; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-function pick(list, n, rand){ return list.map(k=>({k, w: Math.pow(rand(), 1/(FRESH.has(k)?2.2:1))})).sort((a,b)=>b.w-a.w).slice(0,n).map(o=>o.k); }
+let URG=k=>0;
+function pick(list, n, rand){ return list.map(k=>({k, w: Math.pow(rand(), 1/((FRESH.has(k)?2.2:1)+URG(k)))})).sort((a,b)=>b.w-a.w).slice(0,n).map(o=>o.k); }
 function parseIng(str){
   return str.split(";").map(s=>{ s=s.trim(); const opt=s.startsWith("?"); if(opt) s=s.slice(1);
     const m=s.match(/^(.*)\s(\S+)$/), k=m[1], qs=m[2];
@@ -726,10 +732,12 @@ function findRecipes(items,p,round,shown){
   for(const r of FIXED){ if(!okMeta(r)) continue; const e=evaluate(r,H,p.veg);
     if(p.strict?e.missing.length>0:(e.missing.length>2||e.coverage<0.5)) continue;
     let s=side(r)+e.coverage*10-e.missing.length*3+e.fresh*1.2+e.optGot*0.4+(sk&&r.styles.includes(sk)?2.5:0); if(shown.has(r.txt("es").nombre)) s-=6;
+    s+=e.rows.reduce((a,x)=>a+(x.st==="ok"?URG(x.k):x.st==="sub"?URG(x.sub):0),0);
     out.push({r,e,score:s}); }
   const rand=rng(round*977+items.length*13+7);
   for(const T of TEMPLATES){ const r=T.gen(H,p,rand); if(!r) continue; r.comodin=true; if(!okMeta(r)) continue;
     const e=evaluate(r,H,p.veg); let s=side(r)+8.5+e.fresh*1.2+(sk&&r.styles.includes(sk)?2.5:0)+rand()*1.5; if(shown.has(r.txt("es").nombre)) s-=6;
+    s+=e.rows.reduce((a,x)=>a+(x.st==="ok"?URG(x.k):x.st==="sub"?URG(x.sub):0),0);
     out.push({r,e,score:s}); }
   out.sort((a,b)=>b.score-a.score);
   const res=[]; let tpl=0; for(const o of out){ if(res.length>=6) break; if(o.r.comodin){ if(tpl>=3) continue; tpl++; } res.push(o); }
@@ -762,10 +770,10 @@ const toPKey=x=>MENU2P[x]&&x!=="fruta de temporada"?MENU2P[x][0]:x;
 const ALIAS={"huevo":"huevos","champiñón":"champiñones","champis":"champiñones","atún":"atún en lata","jamón":"jamón serrano","lomo":"lomo de cerdo","carne":"carne picada","queso":"queso rallado","yogur":"yogur natural","yogures":"yogur natural","espagueti":"pasta","espaguetis":"pasta","macarrones":"pasta","aceite":"aceite de oliva","pimiento":"pimiento verde","judías":"alubias","vainas":"judías verdes","tortillas":"tortillas de trigo","wraps":"tortillas de trigo","pechuga":"pollo","pechuga de pollo":"pollo","arroz integral":"arroz","pasta integral":"pasta","pan integral":"pan","alubias blancas":"alubias","pavo cocido":"pavo","solomillo":"lomo de cerdo"};
 Object.entries(EU).forEach(([k,[b,d]])=>{ALIAS[b.toLowerCase()]=ALIAS[b.toLowerCase()]||k;ALIAS[d.toLowerCase()]=ALIAS[d.toLowerCase()]||k});
 const ALIASN={};Object.entries(ALIAS).forEach(([a,k])=>{ALIASN[nrm(a)]=ALIASN[nrm(a)]||k});
-function pAdd(raw){const x=String(raw).trim().toLowerCase();if(!x)return;const n=nrm(x),sg=n.replace(/e?s$/,"");
+function pAdd(raw,fresh=true){const x=String(raw).trim().toLowerCase();if(!x)return;const n=nrm(x),sg=n.replace(/e?s$/,"");
   const k=ALLK.find(a=>nrm(a)===n)||ALIASN[n]||ALLK.find(a=>nrm(a)===sg||nrm(a)===n+"s")||ALIASN[sg];
-  if(k){if(!D.pan.includes(k))D.pan.push(k)}else if(!D.pc.includes(x))D.pc.push(x)}
-{const old=D.pc;D.pc=[];old.forEach(pAdd);}
+  if(k){if(!D.pan.includes(k))D.pan.push(k);if(fresh)setExp(k)}else if(!D.pc.includes(x))D.pc.push(x)}
+{const old=D.pc;D.pc=[];old.forEach(x=>pAdd(x,false));}
 const pLabel=k=>LG==="eu"&&EU[k]?EU[k][1]:k;
 
 let cookOpen=false,CR=[],cRound=0,cShown=new Set(),cOpen=new Set(),pClosed=new Set(),cMsg="";
@@ -791,11 +799,12 @@ function cCard(o,i){
 function vCoc(){
   const has=pSet();let cats="";
   for(const [cat,items] of Object.entries(CATS)){const n=items.filter(x=>has.has(x)).length;
-    cats+=`<details class="pcat" data-cat="${cat}"${pClosed.has(cat)?"":" open"}><summary><span>${LG==="eu"?CAT_EU[cat]:cat}</span><span class="mu">${n||""}</span></summary><div class="chips">${items.map(x=>`<button class="chip" data-pi="${esc(x)}" aria-pressed="${has.has(x)}">${esc(pLabel(x))}</button>`).join("")}</div></details>`}
+    cats+=`<details class="pcat" data-cat="${cat}"${pClosed.has(cat)?"":" open"}><summary><span>${LG==="eu"?CAT_EU[cat]:cat}</span><span class="mu">${n||""}</span></summary><div class="chips">${items.map(x=>{const d=has.has(x)?dLeft(x):null;return`<button class="chip${d!==null&&d<=1?" late":d!==null&&d<=3?" soon":""}" data-pi="${esc(x)}" aria-pressed="${has.has(x)}">${esc(pLabel(x))}${d!==null&&d<=3?" ⏰":""}</button>`}).join("")}</div></details>`}
   if(D.pc.length)cats+=`<div class="pcat"><div class="mu" style="font-weight:700">${LL("Otros","Beste batzuk")}</div><div class="chips">${D.pc.map(x=>`<button class="chip" data-pcx="${esc(x)}" aria-pressed="true">${esc(x)} ×</button>`).join("")}</div></div>`;
   const res=CR.length?`<div class="row" id="cres"><h2>${LL("Ideas para hoy","Gaurko ideiak")}</h2><button class="b s" id="cmore">🔄 ${LL("Otras ideas","Beste ideia batzuk")}</button></div>${cMsg?`<div class="note">${esc(cMsg)}</div>`:""}${CR.map(cCard).join("")}`:
     (cRound<0?`<div class="note" id="cres">${LL("Con eso no me salen recetas. Marca algún ingrediente más o desmarca «Solo lo que tengo».","Horrekin ez zait errezetarik ateratzen. Markatu osagai gehiago edo desmarkatu «Dudanarekin bakarrik».")}</div>`:"");
   return `<section><h2>🧺 ${LL("Despensa","Jakitokia")}</h2><p class="mu" style="margin:-6px 0 0">${LL("Marca lo que tienes en casa. Lo usan la compra, el menú semanal y «¿Qué cocino hoy?».","Markatu etxean duzuna. Erosketak, asteko menuak eta «Zer sukaldatu gaur?» atalak erabiltzen dute.")}</p>
+  ${expCard()}
   <div class="card"><div class="row"><h3 style="text-transform:none">${LL("En casa","Etxean")}</h3><span class="mu">${has.size} ${LL("ingredientes","osagai")}</span></div>
   <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div>${cats}
   <div><button class="b s" id="pclr">${LL("Desmarcar todo","Dena desmarkatu")}</button></div></div>
@@ -817,10 +826,10 @@ function tagOf(r){const k=r.ing.filter(x=>!x.opt).map(x=>x.k),h=a=>a.some(x=>k.i
   if(!/[cn]/.test(r.meals))return"f";if(h(["huevos"]))return"h";if(h(["pasta","arroz","cuscús","pan","fideos"]))return"c";return"v"}
 function slotOf(r){const m=MEALK[D.cp.meal];if(m==="d"||m==="c"||m==="n")return m;return r.meals.includes("c")?"c":r.meals.includes("n")?"n":"d"}
 document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
-  if(t.dataset.pi){const k=t.dataset.pi;D.pan=D.pan.includes(k)?D.pan.filter(x=>x!==k):[...D.pan,k];save();draw();return}
-  if(t.dataset.pcx){D.pc=D.pc.filter(x=>x!==t.dataset.pcx);save();draw();return}
-  if(t.id==="padd"){const v=$("#pin").value;v.split(/[,;]/).forEach(pAdd);save();draw();$("#pin").focus();return}
-  if(t.id==="pclr"){D.pan=[];D.pc=[];save();draw();return}
+  if(t.dataset.pi){const k=t.dataset.pi;if(D.pan.includes(k)){D.pan=D.pan.filter(x=>x!==k);delete D.exp[k]}else{D.pan.push(k);setExp(k)}save();draw();return}
+  if(t.dataset.pcx){D.pc=D.pc.filter(x=>x!==t.dataset.pcx);delete D.exp[t.dataset.pcx];save();draw();return}
+  if(t.id==="padd"){const v=$("#pin").value;v.split(/[,;]/).forEach(x=>pAdd(x));save();draw();$("#pin").focus();return}
+  if(t.id==="pclr"){D.pan=[];D.pc=[];D.exp={};save();draw();return}
   if(t.id==="cgo"||t.id==="cmore"){cookOpen=true;cSearch(t.id==="cmore");draw();const r=$("#cres");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});return}
   if(t.dataset.csv){const o=CR[+t.dataset.csv],tx=o.r.txt(LG);
     D.rec.push({id:"u"+Date.now().toString(36),n:tx.nombre,k:slotOf(o.r),t:tagOf(o.r),m:o.r.tiempo,i:o.r.ing.filter(x=>!x.opt&&!NOCOUNT.includes(x.k)).map(x=>x.k),s:tx.pasos.join("|")});
@@ -849,6 +858,34 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
   if(t.dataset.gd){genDay(t.dataset.gd);return}
   if(t.dataset.goc){tab="coc";cookOpen=true;draw();const c=$("#cook");if(c)c.scrollIntoView({block:"start"});return}
   if(t.dataset.cd){delete D.menu[t.dataset.cd];save();draw();return}});
+
+/* ---------- caducidades ---------- */
+D.exp=D.exp||{};let expAll=false;
+const SHELF={"merluza":2,"salmón":2,"bacalao":2,"bonito":2,"sardinas":2,"pescadilla":2,"gambas":2,"almejas":1,"carne picada":2,"pollo":3,"pavo":3,"ternera":3,"lomo de cerdo":4,"bacon":10,"jamón serrano":14,"chorizo":30,
+ "leche":7,"nata":7,"queso fresco":7,"mozzarella":7,"requesón":5,"yogur natural":14,"huevos":21,"queso rallado":21,"mantequilla":30,
+ "lechuga":5,"espinacas":4,"champiñones":5,"tomate":7,"calabacín":7,"berenjena":7,"pimiento rojo":10,"pimiento verde":10,"pepino":7,"brócoli":5,"judías verdes":5,"puerro":10,"apio":14,"zanahoria":21,"calabaza":30,"cebolla":30,"ajo":60,"patata":30,"guisantes":4,
+ "fresas":3,"plátano":6,"aguacate":4,"manzana":21,"naranja":14,"limón":21,"pan":3,"tortillas de trigo":14,"tomate frito":7,"caldo":4};
+function setExp(k){if(SHELF[k]!=null)D.exp[k]=iso(addD(new Date(),SHELF[k]))}
+const dLeft=k=>{const e=D.exp[k];if(!e)return null;return Math.round((new Date(e+"T12:00")-new Date(today+"T12:00"))/864e5)};
+URG=k=>{const d=pSet().has(k)?dLeft(k):null;return d===null?0:d<=2?3:d<=5?1.2:0};
+const dTxt=d=>d<0?LL(`caducó hace ${-d} día${d<-1?"s":""}`,`duela ${-d} egun iraungi zen`):d===0?LL("caduca hoy","gaur iraungitzen da"):d===1?LL("caduca mañana","bihar iraungitzen da"):LL(`en ${d} días`,`${d} egun barru`);
+const dCls=d=>d===null?"":d<=1?"late":d<=3?"soon":"";
+function expRows(list){return list.map(k=>{const d=dLeft(k);return`<div class="ex"><span class="${dCls(d)}"><b>${esc(capS(pLabel(k)))}</b><br><span class="mu">${d===null?LL("sin fecha","datarik gabe"):dTxt(d)}</span></span><input type="date" data-ex="${esc(k)}" value="${D.exp[k]||""}" aria-label="${LL("Fecha de caducidad","Iraungitze-data")}"><button class="b s" data-used="${esc(k)}">✓ ${LL("Gastado","Erabilita")}</button></div>`}).join("")}
+function expCard(){const all=[...pSet()],dated=all.filter(k=>dLeft(k)!==null).sort((a,b)=>dLeft(a)-dLeft(b)),soon=dated.filter(k=>dLeft(k)<=5);
+  return`<div class="card"><div class="row"><h3 style="text-transform:none">⏰ ${LL("Gastar primero","Lehenik erabili")}</h3>${soon.length?`<button class="b s" id="cuse">🍳 ${LL("¿Qué cocino con esto?","Zer sukaldatu honekin?")}</button>`:""}</div>
+  ${soon.length?expRows(soon):`<div class="mu">${dated.length?LL("Nada caduca en los próximos 5 días 👍","Ez da ezer iraungitzen datozen 5 egunetan 👍"):LL("Cuando marques o compres algo fresco, aquí verás cuándo caduca.","Zerbait fresko markatu edo erosten duzunean, hemen ikusiko duzu noiz iraungitzen den.")}</div>`}
+  <details class="rc" id="expall"${expAll?" open":""}><summary class="mu"><b>📅 ${LL("Todas las fechas","Data guztiak")}</b> (${all.length})</summary>${all.length?expRows([...dated.filter(k=>!soon.includes(k)),...all.filter(k=>dLeft(k)===null)]):""}<p class="mu">${LL("Las fechas son estimadas al comprar; cámbialas con la del envase si quieres más precisión.","Datak erostean kalkulatzen dira; aldatu ontziko datarekin zehatzago nahi baduzu.")}</p></details></div>`}
+function expBanner(){const u=[...pSet()].filter(k=>{const d=dLeft(k);return d!==null&&d<=2}).sort((a,b)=>dLeft(a)-dLeft(b));if(!u.length)return"";
+  return`<div class="note warnb">⏰ <b>${LL("Gasta primero","Lehenik erabili")}:</b> ${u.map(k=>`${esc(pLabel(k))} (${dTxt(dLeft(k))})`).join(", ")} <button class="b s" id="cuse">🍳 ${LL("¿Qué cocino con esto?","Zer sukaldatu honekin?")}</button></div>`}
+let expDirty=false;
+function expSet(t,ev){const k=t.dataset.ex;if(t.value){if(!/^20[2-9]\d-\d{2}-\d{2}$/.test(t.value))return;D.exp[k]=t.value}else{if(ev!=="change"||t.validity.badInput)return;delete D.exp[k]}save();expDirty=true;
+  const l=t.closest(".ex").querySelector(".mu");if(l){const d=dLeft(k);l.textContent=d===null?LL("sin fecha","datarik gabe"):dTxt(d)}}
+["input","change"].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(t.dataset&&t.dataset.ex!==undefined)expSet(t,ev)}));
+document.addEventListener("focusout",e=>{const t=e.target;if(t.dataset&&t.dataset.ex!==undefined&&expDirty){expDirty=false;setTimeout(()=>{if(!(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.ex!==undefined))draw()},150)}});
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.used){const k=t.dataset.used;D.pan=D.pan.filter(x=>x!==k);D.pc=D.pc.filter(x=>x!==k);delete D.exp[k];save();draw();return}
+  if(t.id==="cuse"){tab="coc";cookOpen=true;D.cp.strict=false;cSearch(false);draw();const r=$("#cres")||$("#cook");if(r)r.scrollIntoView({block:"start"});return}});
+document.addEventListener("toggle",e=>{if(e.target.id==="expall")expAll=e.target.open},true);
 const cov=r=>{const a=r.i.filter(x=>!NOCOUNT.includes(x));return a.length?a.filter(haveIng).length/a.length:0};
 const pshuf=a=>pSet().size>3?a.map(r=>[Math.random()+cov(r)*0.7,r]).sort((p,q)=>q[0]-p[0]).map(x=>x[1]):shuf(a);
 /* ---------- idiomas ---------- */
@@ -858,6 +895,8 @@ let DS=DSS;
 const TN={es:{l:"Legumbre",p:"Pescado",a:"Ave",h:"Huevo",r:"Carne roja",v:"Verdura",c:"Cereal",f:"Desayuno"},eu:{l:"Lekaleak",p:"Arraina",a:"Hegaztia",h:"Arrautza",r:"Okela gorria",v:"Barazkia",c:"Zerealak",f:"Gosaria"}};
 const EX=Object.fromEntries(`Planificador saludable => Plangintza osasuntsua
 Despensa => Jakitokia
+Caducidades => Iraungitze-datak
+Al marcar o comprar algo fresco => Zerbait fresko markatu edo erostean, iraungitze-data estimatu bat jartzen zaio, eta ontzikoarekin alda dezakezu. Jakitokiaren goiko aldean lehenik zer erabili ikusten duzu, eta Astea fitxan bi egunetan iraungitzen dena abisatzen dizu. Errezetak bilatzean, hori aprobetxatzen dutenek dute lehentasuna.
 Días sueltos => Egun solteak
 Marca en «Días a planificar» solo los días => Markatu «Planifikatzeko egunak» atalean etxean zauden egunak bakarrik, eta menua egun horietarako bakarrik sortuko da. Egun bakoitzak bere botoiak ditu: «✨ Eguna sortu» eta «🗑 Eguna garbitu».
 Despensa y compra => Jakitokia eta erosketa
