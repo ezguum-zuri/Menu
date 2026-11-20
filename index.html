@@ -62,6 +62,8 @@ ul.ing{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:14px}ul
 ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{color:var(--mu)}ul.ing em{font-style:normal;color:var(--ac)}
 .b:disabled{opacity:.6;cursor:default}
 .chip.ed{display:inline-flex;gap:0;padding:0;overflow:hidden}.chip.ed button{border:0;background:none;color:inherit;font:inherit;padding:5px 9px}.chip.ed button+button{border-left:1px solid var(--ln);color:var(--bad)}
+#scv{width:100%;max-height:42vh;object-fit:cover;border-radius:14px;background:#000}.scf{position:relative}.scf::after{content:"";position:absolute;left:12%;right:12%;top:50%;height:2px;background:#e8553f;box-shadow:0 0 8px #e8553f}
+.qd{display:flex;gap:6px;flex-wrap:wrap}
 .chip.soon{border-color:#e0a54a;border-width:2px}.chip.late{border-color:var(--bad);border-width:2px}
 .ex{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln);font-size:14px}.ex input{width:auto;padding:5px 6px;font-size:13px}
 .ex .soon .mu{color:#c27c12;font-weight:600}.ex .late .mu{color:var(--bad);font-weight:600}
@@ -71,12 +73,14 @@ ul.ing li.miss,ul.ing li.miss i{color:var(--bad)}ul.ing li.opt,ul.ing li.soft{co
 <nav id="nav"><button data-t="sem"><span>🍽️</span>Semana</button><button data-t="cal"><span>📅</span>Calendario</button><button data-t="coc"><span>🧺</span>Despensa</button><button data-t="rec"><span>📖</span>Recetas</button><button data-t="lis"><span>🛒</span>Compra</button></nav>
 <main id="v"></main></div>
 <button class="hb" id="hb" aria-label="Cómo se usa">?</button>
+<div class="ov" id="sc" hidden><div class="sheet" role="dialog" id="scb"></div></div>
 <div class="ov" id="hp" hidden><div class="sheet" role="dialog" aria-label="Cómo se usa"><h2>Cómo se usa</h2>
 <div class="hs"><i>🍽️</i><div><b>Semana</b><span>Pulsa «✨ Generar menú saludable» (o «Generar menú Carbohidratos») y se rellenan los desayunos, comidas y cenas. Puedes cambiar cualquier plato con el desplegable. El botón «Receta» te explica cómo prepararlo.</span></div></div>
 <div class="hs"><i>🗓️</i><div><b>Días sueltos</b><span>Marca en «Días a planificar» solo los días que estás en casa y el menú se genera únicamente para esos. Cada día tiene sus botones «✨ Generar día» y «🗑 Vaciar día».</span></div></div>
 <div class="hs"><i>📅</i><div><b>Calendario</b><span>Pulsa una «S» con su número (S45, S46…) para elegir una semana entera. Ahí puedes generar o vaciar su menú y ver los siete días. Pulsa un día para editarlo. Con las flechas cambias de mes.</span></div></div>
 <div class="hs"><i>🧺</i><div><b>Despensa</b><span>Marca lo que tienes en casa. Debajo, en «🍳 ¿Qué cocino hoy?», te propongo recetas con esos ingredientes: del recetario o creadas con lo que tienes. «📖 Guardar en Recetas» la pasa a tus recetas para usarla en el menú, y «🛒» añade a la compra lo que falta.</span></div></div>
 <div class="hs"><i>⏰</i><div><b>Caducidades</b><span>Al marcar o comprar algo fresco se le pone una fecha de caducidad estimada, que puedes cambiar por la del envase. Arriba de la Despensa ves qué gastar primero y en la Semana te avisa de lo que caduca en dos días. Al buscar recetas, se priorizan las que lo aprovechan.</span></div></div>
+<div class="hs"><i>📷</i><div><b>Código de barras</b><span>En la Despensa, «📷 Escanear código de barras» reconoce el producto y te pide la fecha de caducidad (con atajos como +1 semana). La próxima vez que escanees ese mismo producto ya lo recordará. También puedes seguir añadiendo a mano.</span></div></div>
 <div class="hs"><i>📖</i><div><b>Recetas</b><span>Todas las recetas con ingredientes, pasos y el porcentaje de carbohidratos, proteínas y grasas. Filtra por desayunos, comidas o cenas. Abajo puedes añadir las tuyas.</span></div></div>
 <div class="hs"><i>🛒</i><div><b>Compra</b><span>Salen los ingredientes que necesita el menú de la semana, ya marcados. Desmarca los que ya tienes en casa. Puedes añadir más escribiéndolos arriba o desde «Otros ingredientes».</span></div></div>
 <div class="hs"><i>🧺</i><div><b>Despensa y compra</b><span>Lo que está en tu despensa sale en la compra como «en casa», y al generar el menú tienen prioridad las recetas con lo que ya tienes. Al volver del súper, pulsa «✅ Ya lo he comprado» y pasa todo a la despensa.</span></div></div>
@@ -813,7 +817,7 @@ function vCoc(){
   return `<section><h2>🧺 ${LL("Despensa","Jakitokia")}</h2><p class="mu" style="margin:-6px 0 0">${LL("Marca lo que tienes en casa. Lo usan la compra, el menú semanal y «¿Qué cocino hoy?».","Markatu etxean duzuna. Erosketak, asteko menuak eta «Zer sukaldatu gaur?» atalak erabiltzen dute.")}</p>
   ${expCard()}
   <div class="card"><div class="row"><h3 style="text-transform:none">${LL("En casa","Etxean")}</h3><span class="mu">${has.size} ${LL("ingredientes","osagai")}</span></div>
-  <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div>${ask}${pEdit?`<div class="note">${pRen!==null?`<b>${LL("Nuevo nombre para","Izen berria:")} «${esc(pLabel(pRen))}»</b><div class="ad" style="margin-top:6px"><input id="rnin" value="${esc(pLabel(pRen))}" autocomplete="off"><button class="b p" id="rnok">${LL("Guardar","Gorde")}</button></div>`:LL("Pulsa ✏️ para cambiar el nombre de un ingrediente o ✕ para quitarlo de la lista.","Sakatu ✏️ osagai baten izena aldatzeko edo ✕ zerrendatik kentzeko.")}</div>`:""}${cats}
+  <div class="ad"><input id="pin" placeholder="${LL("Añadir ingredientes (separa con comas)","Osagaiak gehitu (komaz bereizi)")}" autocomplete="off"><button class="b p" id="padd">${LL("Añadir","Gehitu")}</button></div><button class="b" id="scan" style="width:100%">📷 ${LL("Escanear código de barras","Barra-kodea eskaneatu")}</button>${ask}${pEdit?`<div class="note">${pRen!==null?`<b>${LL("Nuevo nombre para","Izen berria:")} «${esc(pLabel(pRen))}»</b><div class="ad" style="margin-top:6px"><input id="rnin" value="${esc(pLabel(pRen))}" autocomplete="off"><button class="b p" id="rnok">${LL("Guardar","Gorde")}</button></div>`:LL("Pulsa ✏️ para cambiar el nombre de un ingrediente o ✕ para quitarlo de la lista.","Sakatu ✏️ osagai baten izena aldatzeko edo ✕ zerrendatik kentzeko.")}</div>`:""}${cats}
   <div class="row" style="justify-content:flex-start"><button class="b s" id="pclr">${LL("Desmarcar todo","Dena desmarkatu")}</button><button class="b s" id="pedit">${pEdit?LL("✓ Listo","✓ Eginda"):LL("✏️ Editar ingredientes","✏️ Osagaiak editatu")}</button>${D.phide.length?`<button class="b s" id="punhide">↩️ ${LL("Recuperar ocultos","Ezkutukoak berreskuratu")} (${D.phide.length})</button>`:""}</div></div>
   <details class="card rc" id="cook"${cookOpen?" open":""}><summary><b>🍳 ${LL("¿Qué cocino hoy?","Zer sukaldatu gaur?")}</b><span class="mu">${LL(`${FIXED.length} recetas + ${TEMPLATES.length} tipos que se crean con lo que tienes`,`${FIXED.length} errezeta + duzunarekin sortzen diren ${TEMPLATES.length} mota`)}</span></summary>
   <div class="fm"><div class="two">${cSel("meal",LL("Comida","Otordua"))}${cSel("time",LL("Tiempo máximo","Gehieneko denbora"))}</div><div class="two">${cSel("people",LL("Personas","Pertsonak"))}${cSel("style",LL("Estilo","Estiloa"))}</div>
@@ -910,6 +914,68 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
 document.addEventListener("toggle",e=>{if(e.target.id==="expall")expAll=e.target.open},true);
 const cov=r=>{const a=r.i.filter(x=>!NOCOUNT.includes(x));return a.length?a.filter(haveIng).length/a.length:0};
 const pshuf=a=>pSet().size>3?a.map(r=>[Math.random()+cov(r)*0.7,r]).sort((p,q)=>q[0]-p[0]).map(x=>x[1]):shuf(a);
+
+/* ---------- código de barras ---------- */
+D.bc=D.bc||{};let scStream=null,scTimer=null,scReader=null,scBusy=false,scItem=null;
+const scEl=$("#sc"),scB=$("#scb");
+function scStop(){if(scTimer){clearInterval(scTimer);scTimer=null}try{scReader&&scReader.reset()}catch(_){}scReader=null;if(scStream){scStream.getTracks().forEach(t=>t.stop());scStream=null}}
+function scClose(){scStop();scEl.hidden=true;scItem=null;scBusy=false}
+function loadZX(){return new Promise((ok,ko)=>{if(window.ZXing)return ok();const s=document.createElement("script");s.src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js";s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+function scOpen(){scItem=null;scBusy=false;scEl.hidden=false;
+  scB.innerHTML=`<div class="row"><h2>📷 ${LL("Escanear producto","Produktua eskaneatu")}</h2><button class="b s" data-scx="1">✕</button></div>
+  <div class="scf"><video id="scv" playsinline muted autoplay></video></div>
+  <div class="mu" id="scm">${LL("Apunta al código de barras del envase…","Zuzendu ontziaren barra-kodera…")}</div>
+  <div class="ad"><input id="scc" inputmode="numeric" placeholder="${LL("…o escribe los números del código","…edo idatzi kodearen zenbakiak")}" autocomplete="off"><button class="b p" id="scgo">${LL("Buscar","Bilatu")}</button></div>`;
+  scStart()}
+async function scStart(){const v=$("#scv"),m=$("#scm");
+  try{scStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:720}},audio:false});v.srcObject=scStream;await v.play()}
+  catch(e){m.textContent=LL("No puedo usar la cámara (revisa el permiso). Puedes escribir el código a mano.","Ezin dut kamera erabili (begiratu baimena). Kodea eskuz idatz dezakezu.");return}
+  if("BarcodeDetector" in window){try{const bd=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e"]});
+    scTimer=setInterval(async()=>{if(scBusy||v.readyState<2)return;try{const r=await bd.detect(v);if(r[0])scFound(r[0].rawValue)}catch(_){}},250);return}catch(_){}}
+  try{await loadZX();const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);
+    scReader=new ZXing.BrowserMultiFormatReader(hints,300);scReader.decodeFromVideoElementContinuously(v,(res)=>{if(res&&!scBusy)scFound(res.getText())})}
+  catch(e){m.textContent=LL("No he podido cargar el lector. Escribe el código a mano.","Ezin izan dut irakurgailua kargatu. Idatzi kodea eskuz.")}}
+function guessKey(name){const n=" "+nrm(name).replace(/[^a-z0-9ñ ]/g," ")+" ";let best=null;
+  const cands=[...ALLK.map(k=>[k,k]),...Object.keys(D.pcat).map(k=>[k,k]),...Object.entries(ALIASN).map(([a,k])=>[a,k]),...Object.entries(D.pren||{}).map(([k,v])=>[v,k])];
+  for(const [w,k] of cands){const ww=nrm(w);if(ww.length<3)continue;if(n.includes(" "+ww+" ")||n.includes(" "+ww+"s ")){if(!best||ww.length>best[0].length)best=[ww,k]}}
+  return best?best[1]:null}
+async function scFound(code){code=String(code).replace(/\D/g,"");if(!code||scBusy)return;scBusy=true;try{navigator.vibrate&&navigator.vibrate(60)}catch(_){}
+  scStop();const known=D.bc[code];
+  if(known){scSheet(code,known.name,known.key,known.cat,known.days,null,true);return}
+  scB.innerHTML=`<div class="loading mu">🔎 ${LL("Buscando el producto","Produktua bilatzen")} ${esc(code)}…</div>`;
+  let pname="",brand="";try{const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=product_name_es,product_name,generic_name_es,brands`);
+    if(r.ok){const j=await r.json();const p=j.product||{};pname=(p.product_name_es||p.product_name||p.generic_name_es||"").trim();brand=(p.brands||"").split(",")[0].trim()}}catch(_){}
+  const key=pname?guessKey(pname):null;scSheet(code,pname?pname+(brand?" · "+brand:""):"",key,null,null,!!pname,false)}
+function scSheet(code,title,key,cat,days,found,known){
+  const isStd=key&&ALLK.includes(key),name=key?pLabel(key):(title?title.split("·")[0].trim().toLowerCase():"");
+  const c0=cat||(key&&D.pcat[key])||(isStd?null:"Otros"),d0=days!=null?days:(isStd&&SHELF[key]!=null?SHELF[key]:CSHELF[c0]!=null?CSHELF[c0]:null);
+  const date=d0!=null?iso(addD(new Date(),d0)):"";scItem={code};
+  scB.innerHTML=`<div class="row"><h2>${known?"✅":"🛒"} ${LL("Añadir a la despensa","Jakitokira gehitu")}</h2><button class="b s" data-scx="1">✕</button></div>
+  ${title?`<div class="note">${known?LL("Ya lo conozco: ","Ezagutzen dut: "):""}<b>${esc(title)}</b><br><span class="mu">${LL("Código","Kodea")} ${esc(code)}</span></div>`:`<div class="note">${found===false?LL("No encuentro este producto en la base de datos. Escribe qué es y lo recordaré para la próxima vez.","Ez dut produktu hau datu-basean aurkitzen. Idatzi zer den eta hurrengorako gogoratuko dut."):""}<br><span class="mu">${LL("Código","Kodea")} ${esc(code)}</span></div>`}
+  <label class="fm"><span class="mu">${LL("Guardar en la despensa como","Jakitokian honela gorde")}</span><input id="scn" value="${esc(name)}" autocomplete="off" placeholder="${LL("ej. leche, yogur, pollo…","adib. esnea, jogurta, oilaskoa…")}"></label>
+  <label class="fm" id="sccatw"${isStd?" hidden":""}><span class="mu">${LL("Categoría","Kategoria")}</span><select id="sccat">${[...Object.keys(CATS),"Otros"].map(c=>`<option value="${c}"${c===c0?" selected":""}>${c==="Otros"?LL("Otros","Beste batzuk"):LG==="eu"?CAT_EU[c]:c}</option>`).join("")}</select></label>
+  <label class="fm"><span class="mu">${LL("Caducidad (mírala en el envase)","Iraungitze-data (begiratu ontzian)")}</span><input type="date" id="scd" value="${date}"></label>
+  <div class="qd">${[[1,LL("Mañana","Bihar")],[3,"+3"],[7,LL("+1 semana","+1 aste")],[14,LL("+2 sem.","+2 aste")],[30,LL("+1 mes","+1 hil")],[180,LL("+6 meses","+6 hil")]].map(([d,l])=>`<button class="chip" data-scq="${d}">${l}</button>`).join("")}<button class="chip" data-scq="none">${LL("Sin fecha","Datarik gabe")}</button></div>
+  <div class="row"><button class="b p" id="scok">✓ ${LL("Añadir","Gehitu")}</button><button class="b" id="scagain">📷 ${LL("Guardar y escanear otro","Gorde eta beste bat eskaneatu")}</button></div>`;
+  const n=$("#scn");n.addEventListener("input",()=>{const k=resolveKey(n.value);$("#sccatw").hidden=!!(k&&ALLK.includes(k))});if(!name)n.focus()}
+function resolveKey(v){const x=nrm(v);if(!x)return null;const rk=Object.keys(D.pren||{}).find(a=>nrm(D.pren[a])===x);return rk||ALLK.find(a=>nrm(a)===x)||ALIASN[x]||Object.keys(D.pcat).find(a=>nrm(a)===x)||null}
+function scSave(){const v=($("#scn").value||"").trim().toLowerCase();if(!v){$("#scn").focus();return false}
+  const d=$("#scd").value,cat=$("#sccat").value;let k=resolveKey(v);
+  if(k&&ALLK.includes(k)){D.phide=D.phide.filter(y=>y!==k);if(!D.pan.includes(k))D.pan.push(k)}
+  else{k=k||v;if(D.pcat[k]===undefined)D.pcat[k]=cat;if(!D.pc.includes(k))D.pc.push(k)}
+  const days=d?Math.round((new Date(d+"T12:00")-new Date(today+"T12:00"))/864e5):null;
+  if(d)D.exp[k]=d;else delete D.exp[k];
+  D.bc[scItem.code]={name:(scB.querySelector(".note b")||{}).textContent||v,key:k,cat:D.pcat[k]||null,days:days!=null&&days>0?days:null};
+  save();draw();return true}
+scEl.addEventListener("click",e=>{if(e.target===scEl){scClose();return}const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.scx){scClose();return}
+  if(t.id==="scgo"){scFound($("#scc").value);return}
+  if(t.dataset.scq){$("#scd").value=t.dataset.scq==="none"?"":iso(addD(new Date(),+t.dataset.scq));return}
+  if(t.id==="scok"){if(scSave())scClose();return}
+  if(t.id==="scagain"){if(scSave())scOpen();return}});
+scEl.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="scc")scFound(e.target.value);if(e.key==="Enter"&&e.target.id==="scn"){if(scSave())scClose()}});
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(t&&t.id==="scan")scOpen()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!scEl.hidden)scClose()});
 /* ---------- idiomas ---------- */
 const LOC=()=>LG==="eu"?"eu-ES":"es-ES";
 const DNS=DN.slice(),DNE=["Astelehena","Asteartea","Asteazkena","Osteguna","Ostirala","Larunbata","Igandea"],DSS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],DSE=["al.","ar.","az.","og.","or.","lr.","ig."];
@@ -917,6 +983,8 @@ let DS=DSS;
 const TN={es:{l:"Legumbre",p:"Pescado",a:"Ave",h:"Huevo",r:"Carne roja",v:"Verdura",c:"Cereal",f:"Desayuno"},eu:{l:"Lekaleak",p:"Arraina",a:"Hegaztia",h:"Arrautza",r:"Okela gorria",v:"Barazkia",c:"Zerealak",f:"Gosaria"}};
 const EX=Object.fromEntries(`Planificador saludable => Plangintza osasuntsua
 Despensa => Jakitokia
+Código de barras => Barra-kodea
+En la Despensa, «📷 Escanear código de barras» => Jakitokian, «📷 Barra-kodea eskaneatu» botoiak produktua ezagutzen du eta iraungitze-data eskatzen dizu (+1 aste bezalako lasterbideekin). Produktu bera hurrengoan eskaneatzean, gogoratuko du. Eskuz gehitzen jarrai dezakezu.
 Caducidades => Iraungitze-datak
 Al marcar o comprar algo fresco => Zerbait fresko markatu edo erostean, iraungitze-data estimatu bat jartzen zaio, eta ontzikoarekin alda dezakezu. Jakitokiaren goiko aldean lehenik zer erabili ikusten duzu, eta Astea fitxan bi egunetan iraungitzen dena abisatzen dizu. Errezetak bilatzean, hori aprobetxatzen dutenek dute lehentasuna.
 Días sueltos => Egun solteak
